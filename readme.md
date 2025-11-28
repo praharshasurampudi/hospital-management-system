@@ -124,12 +124,11 @@ hms/
 
 ---
 
-## ⚙️ **Installation & Setup**
+## 🔧 Installation
 
-### 1️⃣ Clone or extract the project
-
+### 1️⃣ Clone the repository
 ```
-cd hms
+git clone https://github.com/praharshasurampudi/hospital-management-system.git
 ```
 
 ### 2️⃣ Create a virtual environment
