@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Edit Availability | HMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Edit Availability</h4>
+  <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-sm btn-outline-secondary">Back</a>
+</div>
+
+<form method="post">
+  <div class="card p-3">
+    <div class="row g-3">
+      {% for day in availability %}
+      <div class="col-md-4">
+        <div class="border rounded p-2 h-100">
+          <div class="fw-semibold mb-2">{{ day.date }}</div>
+          <div>
+            {% for slot in day.slots %}
+              <div class="form-check mb-1 d-flex align-items-center">
+                {% if slot.booked %}
+                  <!-- booked slots disabled; show red -->
+                  <input class="form-check-input me-2" type="checkbox" disabled>
+                  <label class="form-check-label text-danger">{{ slot.time }} — Booked</label>
+                {% else %}
+                  <input class="form-check-input me-2" type="checkbox" name="{{ slot.form_key }}" id="{{ slot.form_key }}" {% if slot.checked %}checked{% endif %}>
+                  <label class="form-check-label">{{ slot.time }}</label>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-success">Save Availability</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

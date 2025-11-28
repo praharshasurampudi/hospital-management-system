@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Patient History | HMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Patient — {{ patient.user.name }}</h4>
+  <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-sm btn-outline-secondary">Back</a>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+    <p><strong>Phone:</strong> {{ patient.phone or '-' }}</p>
+    <p><strong>Age:</strong> {{ patient.age or '-' }}</p>
+    <p><strong>Address:</strong> {{ patient.address or '-' }}</p>
+  </div>
+</div>
+
+<h5 class="mb-3">Appointments & Treatments</h5>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Doctor</th>
+        <th>Status</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appt in patient.appointments.order_by('date').all() %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ appt.date }}</td>
+        <td>{{ appt.doctor.user.name }}</td>
+        <td>{{ appt.status }}</td>
+        <td>{{ appt.treatment.diagnosis if appt.treatment else '' }}</td>
+        <td>{{ appt.treatment.prescription if appt.treatment else '' }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center text-muted">No appointment records found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

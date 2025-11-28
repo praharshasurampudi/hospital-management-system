@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | HMS{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4 fw-bold">Admin Dashboard</h3>
+    <!-- Search box -->
+    <div class="flex justify-content-center">
+        <form method="get" action="{{ url_for('admin.dashboard') }}">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search doctors, patients, appointments..." value="{{ q or '' }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+</br>
+<div class="row g-3">
+
+    <!-- Doctors count -->
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 text-center">
+            <h6 class="text-muted">Total Doctors</h6>
+            <div class="display-5 fw-bold">{{ total_doctors }}</div>
+        </div>
+    </div>
+
+    <!-- Patients count -->
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 text-center">
+            <h6 class="text-muted">Total Patients</h6>
+            <div class="display-5 fw-bold">{{ total_patients }}</div>
+        </div>
+    </div>
+
+    <!-- Appointments count -->
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 text-center">
+            <h6 class="text-muted">Total Appointments</h6>
+            <div class="display-5 fw-bold">{{ total_appointments }}</div>
+        </div>
+    </div>
+
+
+
+<div class="mt-4 d-flex justify-content-between align-items-center">
+    <a href="{{ url_for('admin.add_doctor') }}" class="btn btn-primary">+ Add New Doctor</a>
+    <div>
+      {% if q %}
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary">Clear search</a>
+      {% endif %}
+    </div>
+</div>
+
+<hr class="my-4">
+
+<div class="row">
+  <div class="col-md-6">
+    <h4 class="mb-3">Doctors</h4>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+          <thead class="table-light">
+              <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Specialization</th>
+                  <th>Email</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for doc in doctors %}
+              <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ doc.user.name }}</td>
+                  <td>{{ doc.specialization }}</td>
+                  <td>{{ doc.user.email }}</td>
+                  <td>
+                      <a href="{{ url_for('admin.edit_doctor', doctor_id=doc.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                      <a href="{{ url_for('admin.delete_doctor', doctor_id=doc.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this doctor?')">Delete</a>
+                  </td>
+              </tr>
+          {% else %}
+              <tr>
+                  <td colspan="5" class="text-center text-muted">No doctors found.</td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <h4 class="mb-3">Patients</h4>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+          <thead class="table-light">
+              <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for pat in patients %}
+              <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ pat.user.name }}</td>
+                  <td>{{ pat.phone or '-' }}</td>
+                  <td>{{ pat.user.email }}</td>
+                  <td>
+                      <a href="{{ url_for('admin.patient_history', patient_id=pat.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                      <a href="{{ url_for('admin.delete_patient', patient_id=pat.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this patient? This will remove their account.')">Delete</a>
+                  </td>
+              </tr>
+          {% else %}
+              <tr>
+                  <td colspan="5" class="text-center text-muted">No patients found.</td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr class="my-4">
+
+<h4 class="mb-3">Appointments (Search Results or All)</h4>
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Patient</th>
+        <th>Doctor</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appt in appointments %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ appt.date }}</td>
+        <td>{{ appt.time.strftime('%H:%M') }}</td>
+        <td>{{ appt.patient.user.name }}</td>
+        <td>{{ appt.doctor.user.name }}</td>
+        <td>{{ appt.status }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center text-muted">No appointments found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

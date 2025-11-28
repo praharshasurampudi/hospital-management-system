@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Doctor' if form.name.data else 'Add Doctor' }} | HMS{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4 fw-bold">
+    {{ 'Edit Doctor' if form.name.data else 'Add New Doctor' }}
+</h3>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <!-- Name -->
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control") }}
+                        {% for err in form.name.errors %}
+                            <div class="text-danger small">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control") }}
+                        {% for err in form.email.errors %}
+                            <div class="text-danger small">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Specialization -->
+                    <div class="mb-3">
+                        {{ form.specialization.label(class="form-label") }}
+                        {{ form.specialization(class="form-control") }}
+                        {% for err in form.specialization.errors %}
+                            <div class="text-danger small">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="mb-3">
+                        {{ form.bio.label(class="form-label") }}
+                        {{ form.bio(class="form-control", rows="4") }}
+                        {% for err in form.bio.errors %}
+                            <div class="text-danger small">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Password (NEW FIELD) -->
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control") }}
+                        <div class="form-text">
+                            Leave empty to use default password (doctor123) or to keep existing password.
+                        </div>
+
+                        {% for err in form.password.errors %}
+                            <div class="text-danger small">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid mt-3">
+                        {{ form.submit(class="btn btn-success btn-lg") }}
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

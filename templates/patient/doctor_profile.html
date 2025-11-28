@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Doctor Profile | HMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Dr. {{ doctor.user.name }}</h4>
+  <a href="{{ url_for('patient.dashboard') }}" class="btn btn-sm btn-outline-secondary">Back</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card shadow-sm text-center p-3">
+      <div class="avatar mx-auto mb-3">{{ doctor.user.name.split(' ')[0][0] }}</div>
+      <h5 class="mb-1">{{ doctor.user.name }}</h5>
+      <p class="small text-muted mb-2">{{ doctor.specialization }}</p>
+      <p class="small text-muted">{{ doctor.bio or 'No profile available.' }}</p>
+
+      <a href="{{ url_for('patient.check_availability', doctor_id=doctor.id) }}" class="btn btn-primary btn-sm mt-2">Check Availability</a>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card shadow-sm p-3 mb-3">
+      <h6 class="mb-2">Recent Appointments (with this doctor)</h6>
+      <ul class="list-group list-group-flush">
+        {% for appt in recent %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ appt.patient.user.name }}</strong>
+            <div class="small text-muted">{{ appt.date }} • {{ appt.time.strftime('%H:%M') }}</div>
+          </div>
+          <!-- Patients' full histories are private; only link to your own history -->
+          <div>
+            {% if current_user.role == 'patient' and current_user.patient_profile and current_user.patient_profile.id == appt.patient.id %}
+              <a href="{{ url_for('patient.history') }}" class="btn btn-sm btn-outline-primary">My History</a>
+            {% else %}
+              <span class="small text-muted">—</span>
+            {% endif %}
+          </div>
+        </li>
+        {% else %}
+        <li class="list-group-item text-muted">No recent appointments found.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card shadow-sm p-3">
+      <h6 class="mb-2">About the Doctor</h6>
+      <p class="small">{{ doctor.bio or 'No additional information.' }}</p>
+      <p class="small text-muted"><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

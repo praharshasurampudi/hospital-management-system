@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Doctor Availability | HMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Availability — Dr. {{ doctor.user.name }}</h4>
+  <a href="{{ url_for('patient.doctor_profile', doctor_id=doctor.id) }}" class="btn btn-sm btn-outline-secondary">Back</a>
+</div>
+
+<div class="card shadow-sm p-3">
+  <form method="post">
+    <div class="row g-3">
+      {% for day in availability %}
+      {# capture outer loop index in a variable for inner use #}
+      {% set day_idx = loop.index0 %}
+      <div class="col-md-4">
+        <div class="border rounded p-2 h-100">
+          <div class="fw-semibold">{{ day.date }}</div>
+          <div class="mt-2">
+            {% for slot in day.slots %}
+              {# use day_idx instead of loop.parent.index0 #}
+              {% set slot_id = "slot_" ~ day_idx ~ "_" ~ loop.index0 %}
+              {% if slot.available %}
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="radio" name="slot" id="{{ slot_id }}" value="{{ slot.value }}">
+                  <label class="form-check-label" for="{{ slot_id }}">{{ slot.label }}</label>
+                </div>
+              {% else %}
+                <div class="mb-1 small text-muted">{{ slot.label }} — Booked</div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+      <button type="submit" class="btn btn-success">Book Selected Slot</button>
+      <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

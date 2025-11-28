@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}My Appointments & History | HMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Appointment History</h4>
+  <a href="{{ url_for('patient.dashboard') }}" class="btn btn-sm btn-outline-secondary">Back</a>
+</div>
+
+<div class="card shadow-sm p-3">
+  <div class="table-responsive">
+    <table class="table table-striped align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Doctor</th>
+          <th>Status</th>
+          <th>Diagnosis</th>
+          <th>Prescription</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ appt.date }}</td>
+          <td>{{ appt.time.strftime('%H:%M') }}</td>
+          <td>{{ appt.doctor.user.name }}</td>
+          <td>
+            {% if appt.status == 'Booked' %}
+              <span class="badge bg-primary">{{ appt.status }}</span>
+            {% elif appt.status == 'Completed' %}
+              <span class="badge bg-success">{{ appt.status }}</span>
+            {% else %}
+              <span class="badge bg-danger">{{ appt.status }}</span>
+            {% endif %}
+          </td>
+          <td class="small">{{ appt.treatment.diagnosis if appt.treatment else '' }}</td>
+          <td class="small">{{ appt.treatment.prescription if appt.treatment else '' }}</td>
+          <td>
+            <a href="{{ url_for('patient.view_appointment', aid=appt.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+            {% if appt.status == 'Booked' %}
+              <a href="{{ url_for('patient.cancel_appointment', aid=appt.id) }}" class="btn btn-sm btn-danger">Cancel</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center text-muted">No appointment records found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

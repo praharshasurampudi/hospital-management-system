@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard | HMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Doctor Dashboard — Dr. {{ current_user.name }}</h4>
+  <a href="{{ url_for('doctor.provide_availability') }}" class="btn btn-sm btn-outline-primary">Provide Availability</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6 class="card-title">Today's Appointments</h6>
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Time</th>
+                <th>Patient</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in todays %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ a.time.strftime('%H:%M') }}</td>
+                <td>{{ a.patient.user.name }}</td>
+                <td>
+                  <a href="{{ url_for('doctor.appointment_detail', aid=a.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                  <a href="{{ url_for('doctor.mark_complete', aid=a.id) }}" class="btn btn-sm btn-success">Complete</a>
+                  <a href="{{ url_for('doctor.cancel_appointment', aid=a.id) }}" class="btn btn-sm btn-danger">Cancel</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4" class="text-center text-muted">No appointments for today.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title">Upcoming Week Appointments</h6>
+        <ul class="list-group list-group-flush">
+          {% for a in week_appts %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ a.date }}</strong> — {{ a.time.strftime('%H:%M') }} <br>
+              <small class="text-muted">Patient: {{ a.patient.user.name }}</small>
+            </div>
+            <div>
+              <a href="{{ url_for('doctor.appointment_detail', aid=a.id) }}" class="btn btn-sm btn-outline-primary">Open</a>
+            </div>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted">No upcoming appointments this week.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6 class="card-title">Assigned Patients (week)</h6>
+        <ul class="list-group">
+          {% for p in patients %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ p.user.name }}
+            <a href="{{ url_for('doctor.view_patient_history', pid=p.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted">No patients assigned this week.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title">Availability (next 7 days)</h6>
+        {% if availability %}
+          {% for day in availability %}
+            <div class="mb-2">
+                <strong>{{ day.date }}</strong>
+                <div class="mt-1">
+                {% for slot in day.slots %}
+                    {% if slot.open %}
+                    <span class="badge bg-success me-1 mb-1">{{ slot.label }}</span>
+                    {% else %}
+                    {% if slot.explicitly_set and not slot.available_flag %}
+                        <span class="badge bg-danger me-1 mb-1">{{ slot.label }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary me-1 mb-1">{{ slot.label }}</span>
+                    {% endif %}
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+          <p class="text-muted">No availability set.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
